@@ -4,10 +4,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Dalamud.Game.Command;
 using Dalamud.Game.Network;
+using Dalamud.Memory;
 using Dalamud.Plugin;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel;
@@ -203,12 +206,21 @@ namespace Peon
             {
                 case "test":
                 {
-                    var info  = Service<PositionInfoAddress>.Get();
-                    var house = info.House;
-                    if (house == 0)
-                        Dalamud.Chat.Print($"{info.Zone} Ward {info.Ward}, {info.Plot} {(info.Subdivision ? "(Subdivision)" : "")}");
-                    else
-                        Dalamud.Chat.Print($"{info.Zone} Ward {info.Ward}, {info.House} Floor {info.Floor}");
+                    var uiModule    = Dalamud.GameGui.GetUIModule();
+                    Dalamud.Chat.Print($"uiModule: {uiModule:X}");
+                    var vf33           = (IntPtr*) (*(ulong*)uiModule + 0x108);
+                    Dalamud.Chat.Print($"vf33: { (ulong)vf33:X}");
+                    var unkModule = ((delegate*<IntPtr, IntPtr>) *vf33)(uiModule);
+                    Dalamud.Chat.Print($"unkModule: {unkModule:X}");
+                    var dataPtr = unkModule + 0x1978 + 0x8 * 0xB;
+                    Dalamud.Chat.Print($"dataPtr: {dataPtr:X}");
+                    var data   = *(IntPtr*)dataPtr;
+                    var fcName = MemoryHelper.ReadStringNullTerminated(data + 0x7C);
+                    Dalamud.Chat.Print(fcName);
+                    //var y       = *(IntPtr*)test;
+                    //Dalamud.Chat.Print($"Letters offset evaluated: { (ulong)y:X}");
+                    //y += 0x7C;
+                    //Dalamud.Chat.Print(MemoryHelper.ReadSeStringNullTerminated(y));
                     break;
                 }
                 case "sig":
@@ -524,6 +536,7 @@ namespace Peon
                     Retainers!.Cancel();
                     Chocobos.Cancel();
                     Board.Cancel();
+                    Crafter.Cancel();
                     break;
                 case "allturnin":
                     Task.Run(() =>

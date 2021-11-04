@@ -14,13 +14,16 @@ namespace Peon
         private delegate void   Delegate3PtrInt(IntPtr a1, IntPtr a2, IntPtr a3, int a4);
         private delegate IntPtr Delegate2Ptr_Ptr(IntPtr a1, IntPtr a2);
         private delegate IntPtr Delegate2PtrInt_Ptr(IntPtr a1, IntPtr a2, uint a3);
+        private delegate IntPtr DelegatePtrInt_Ptr(IntPtr a1, uint a2);
         
         private delegate IntPtr Delegate4Ptr_Ptr(IntPtr a1, IntPtr a2, IntPtr a3, IntPtr a4);
         private delegate IntPtr DelegatePtr_Ptr(IntPtr a1);
+        private delegate IntPtr Delegate_Ptr();
         private delegate IntPtr DelegatePtrByte_Ptr(IntPtr a1, byte a2);
         private delegate void   DelegatePtr(IntPtr a1);
         private delegate void   DelegatePtrByte(IntPtr a1, byte a2);
         private delegate void   DelegatePtrShort(IntPtr a1, ushort a2);
+        private delegate void   Constructor(IntPtr a1);
 
         public static void SetHooks(this HookManager hooks)
         {
@@ -36,11 +39,14 @@ namespace Peon
             hooks.Create<OnAddonReceiveEventDelegate>("ReceiveJournalResultEvent", 0xDF9000,  false, null, ReceiveEventData);
             hooks.Create<OnAddonReceiveEventDelegate>("ReceiveFocusTargetEvent",   0x101e6b0,  false, (Func<IntPtr, ushort, int, IntPtr, IntPtr, bool>) EventDataCondition, ReceiveEventData);
             hooks.Create<OnAddonReceiveEventDelegate>("ReceiveSelectStringEvent",   0xCDC310,  false, null, ReceiveEventData);
+            hooks.Create<OnAddonSetupDelegate>("SetupYesNo", 0xCE7800,  false, null);
             hooks.Create<DelegatePtrByte_Ptr>("Unk", 0x1a5770, false);
             hooks.Create<DelegatePtr>("Unk2", 0x1a5150, false);
             hooks.Create<Delegate3PtrInt>("Unk3", 0x1a23a0, false);
             hooks.Create<DelegatePtrByte>("Airship",        0x2a0b20, false);
             hooks.Create<DelegatePtrByte>("TerritorySetup", 0xA99C00, false);
+            hooks.Create<Constructor>("AgentFCCandidate", 0x26e510, false);
+            hooks.Create<DelegatePtrInt_Ptr>("Unk4", 0x0AA3F0, false);
         }
 
         private static unsafe bool IncRefCondition(IntPtr a1, IntPtr a2, uint a3)
