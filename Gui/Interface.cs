@@ -744,6 +744,14 @@ namespace Peon.Gui
 
                     ImGui.EndTable();
                 }
+
+            if (ImGui.CollapsingHeader("Length"))
+            {
+                var tmp = string.Empty;
+                ImGui.InputText("##InputTextLength", ref tmp, 128);
+                ImGui.SameLine();
+                ImGui.Text($" has length {ImGui.CalcTextSize(tmp).X}");
+            }
         }
 
         private void Draw()

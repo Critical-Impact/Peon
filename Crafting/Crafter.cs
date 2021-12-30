@@ -14,7 +14,7 @@ namespace Peon.Crafting
         public bool Verbose { get; set; }
 
         private bool _running;
-        private bool _basicTouchCombo;
+        private int  _basicTouchCombo;
         private int  _currentStep;
 
         public Crafter(CommandManager commandManager, InterfaceManager interfaceManager,
@@ -35,7 +35,12 @@ namespace Peon.Crafting
         private ActionInfo Use(ActionId id)
         {
             var action = id.Use(_interface.Synthesis().Status, _basicTouchCombo);
-            _basicTouchCombo = action.Id == ActionId.BasicTouch;
+            _basicTouchCombo = action.Id switch
+            {
+                ActionId.BasicTouch                               => 1,
+                ActionId.StandardTouch when _basicTouchCombo == 1 => 2,
+                _                                                 => 0,
+            };
             return action;
         }
 
@@ -61,7 +66,7 @@ namespace Peon.Crafting
         public void Cancel()
         {
             _running         = false;
-            _basicTouchCombo = false;
+            _basicTouchCombo = 0;
             _currentStep     = 0;
         }
 

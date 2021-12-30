@@ -4,102 +4,104 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Peon.Utility;
 
-namespace Peon.Crafting
+namespace Peon.Crafting;
+
+[JsonConverter(typeof(StringEnumConverter))]
+public enum ActionId : byte
 {
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum ActionId : byte
-    {
-        None,
-        BasicSynthesis,
-        BasicTouch,
-        MastersMend,
-        HastyTouch,
-        RapidSynthesis,
-        InnerQuiet,
-        Observe,
-        TricksOfTheTrade,
-        WasteNot,
-        Veneration,
-        StandardTouch,
-        GreatStrides,
-        Innovation,
-        NameOfTheElements,
-        BrandOfTheElements,
-        FinalAppraisal,
-        WasteNot2,
-        ByregotsBlessing,
-        PreciseTouch,
-        MuscleMemory,
-        CarefulObservation,
-        CarefulSynthesis,
-        PatientTouch,
-        Manipulation,
-        PrudentTouch,
-        FocusedSynthesis,
-        FocusedTouch,
-        Reflect,
-        PreparatoryTouch,
-        Groundwork,
-        DelicateSynthesis,
-        IntensiveSynthesis,
-        TrainedEye,
-    };
+    None,
+    BasicSynthesis,
+    BasicTouch,
+    MastersMend,
+    HastyTouch,
+    RapidSynthesis,
+    InnerQuiet,
+    Observe,
+    TricksOfTheTrade,
+    WasteNot,
+    Veneration,
+    StandardTouch,
+    GreatStrides,
+    Innovation,
+    NameOfTheElements,
+    BrandOfTheElements,
+    FinalAppraisal,
+    WasteNot2,
+    ByregotsBlessing,
+    PreciseTouch,
+    MuscleMemory,
+    CarefulObservation,
+    CarefulSynthesis,
+    PatientTouch,
+    Manipulation,
+    PrudentTouch,
+    FocusedSynthesis,
+    FocusedTouch,
+    Reflect,
+    PreparatoryTouch,
+    Groundwork,
+    DelicateSynthesis,
+    IntensiveSynthesis,
+    TrainedEye,
+    AdvancedTouch,
+    PrudentSynthesis,
+    TrainedFinesse,
+};
 
-    public enum CrafterId
+public enum CrafterId
+{
+    Carpenter,
+    Blacksmith,
+    Armorer,
+    Goldsmith,
+    Leatherworker,
+    Weaver,
+    Alchemist,
+    Culinarian,
+}
+
+public readonly struct ActionInfo
+{
+    public readonly LazyString Name;
+    public readonly int        Delay;
+
+    private readonly (uint, uint, uint, uint, uint, uint, uint, uint) _gameId;
+    public readonly  ActionId                                         Id;
+
+    public ActionInfo(ActionId id, StringId name, int delay, uint crp, uint bsm, uint arm, uint gsm, uint ltw, uint wvr,
+        uint alc, uint cul)
     {
-        Carpenter,
-        Blacksmith,
-        Armorer,
-        Goldsmith,
-        Leatherworker,
-        Weaver,
-        Alchemist,
-        Culinarian,
+        Name    = new LazyString(name);
+        Id      = id;
+        Delay   = delay;
+        _gameId = (crp, bsm, arm, gsm, ltw, wvr, alc, cul);
     }
 
-    public readonly struct ActionInfo
+    public uint this[CrafterId crafter]
     {
-        public readonly LazyString Name;
-        public readonly int        Delay;
-
-        private readonly (uint, uint, uint, uint, uint, uint, uint, uint) _gameId;
-        public readonly  ActionId                                         Id;
-
-        public ActionInfo(ActionId id, StringId name, int delay, uint crp, uint bsm, uint arm, uint gsm, uint ltw, uint wvr,
-            uint alc, uint cul)
+        get
         {
-            Name    = new LazyString(name);
-            Id      = id;
-            Delay   = delay;
-            _gameId = (crp, bsm, arm, gsm, ltw, wvr, alc, cul);
-        }
-
-        public uint this[CrafterId crafter]
-        {
-            get
+            return crafter switch
             {
-                return crafter switch
-                {
-                    CrafterId.Carpenter     => _gameId.Item1,
-                    CrafterId.Blacksmith    => _gameId.Item2,
-                    CrafterId.Armorer       => _gameId.Item3,
-                    CrafterId.Goldsmith     => _gameId.Item4,
-                    CrafterId.Leatherworker => _gameId.Item5,
-                    CrafterId.Weaver        => _gameId.Item6,
-                    CrafterId.Alchemist     => _gameId.Item7,
-                    CrafterId.Culinarian    => _gameId.Item8,
-                    _                       => throw new InvalidEnumArgumentException(),
-                };
-            }
+                CrafterId.Carpenter     => _gameId.Item1,
+                CrafterId.Blacksmith    => _gameId.Item2,
+                CrafterId.Armorer       => _gameId.Item3,
+                CrafterId.Goldsmith     => _gameId.Item4,
+                CrafterId.Leatherworker => _gameId.Item5,
+                CrafterId.Weaver        => _gameId.Item6,
+                CrafterId.Alchemist     => _gameId.Item7,
+                CrafterId.Culinarian    => _gameId.Item8,
+                _                       => throw new InvalidEnumArgumentException(),
+            };
         }
-
-        public string Cast()
-            => $"/ac \"{Name}\"";
     }
 
+    public string Cast()
+        => $"/ac \"{Name}\"";
+}
 
-    public static class ActionIdExtensions
-    {
+public static class ActionIdExtensions
+{
         // @formatter:off
         public static readonly Dictionary<ActionId, ActionInfo> Actions = new()
         {
@@ -137,26 +139,30 @@ namespace Peon.Crafting
             { ActionId.DelicateSynthesis,  new ActionInfo(ActionId.DelicateSynthesis,  StringId.DelicateSynthesis,    2500, 100323, 100324, 100325, 100326, 100327, 100328, 100329, 100330 ) },
             { ActionId.IntensiveSynthesis, new ActionInfo(ActionId.IntensiveSynthesis, StringId.IntensiveSynthesis,   2500, 100315, 100316, 100317, 100318, 100319, 100320, 100321, 100322 ) },
             { ActionId.TrainedEye,         new ActionInfo(ActionId.TrainedEye,         StringId.TrainedEye,           1500, 100283, 100284, 100285, 100286, 100287, 100288, 100289, 100290 ) },
+            { ActionId.AdvancedTouch,      new ActionInfo(ActionId.AdvancedTouch,      StringId.AdvancedTouch,        2500, 100411, 100412, 100413, 100414, 100415, 100416, 100417, 100418 ) },
+            { ActionId.PrudentSynthesis,   new ActionInfo(ActionId.PrudentSynthesis,   StringId.PrudentSynthesis,     2500, 100427, 100428, 100429, 100430, 100431, 100432, 100433, 100434 ) },
+            { ActionId.TrainedFinesse,     new ActionInfo(ActionId.TrainedFinesse,     StringId.TrainedFinesse,       2500, 100435, 100436, 100437, 100438, 100439, 100440, 100441, 100442 ) },
         };
-        // @formatter:on
+    // @formatter:on
 
-        public static ActionInfo Use(this ActionId id)
-            => Actions[id];
+    public static ActionInfo Use(this ActionId id)
+        => Actions[id];
 
 
-        public static ActionInfo Use(this ActionId id, Status status, bool basicTouchCombo)
+    public static ActionInfo Use(this ActionId id, Status status, int basicTouchCombo)
+    {
+        return id switch
         {
-            return id switch
-            {
-                ActionId.BasicTouch => status.Improved() ? ActionId.PreciseTouch.Use() :
-                    basicTouchCombo                      ? ActionId.StandardTouch.Use() : id.Use(),
-                ActionId.ByregotsBlessing => status == Status.Poor ? ActionId.BasicTouch.Use() : id.Use(),
-                ActionId.GreatStrides     => status == Status.Excellent ? ActionId.ByregotsBlessing.Use() : id.Use(),
-                ActionId.StandardTouch    => status.Improved() ? ActionId.PreciseTouch.Use() : id.Use(),
-                ActionId.FocusedTouch     => status.Improved() ? ActionId.PreciseTouch.Use() : id.Use(),
-                ActionId.PreparatoryTouch => status.Improved() ? ActionId.PreciseTouch.Use() : id.Use(),
-                _                         => id.Use(),
-            };
-        }
+            ActionId.BasicTouch => status.Improved() ? ActionId.PreciseTouch.Use() :
+                basicTouchCombo == 1                 ? ActionId.StandardTouch.Use() :
+                basicTouchCombo == 2                 ? ActionId.AdvancedTouch.Use() : id.Use(),
+            ActionId.ByregotsBlessing => status == Status.Poor ? ActionId.BasicTouch.Use() : id.Use(),
+            ActionId.GreatStrides     => status == Status.Excellent ? ActionId.ByregotsBlessing.Use() : id.Use(),
+            ActionId.StandardTouch    => status.Improved() ? ActionId.PreciseTouch.Use() : id.Use(),
+            ActionId.AdvancedTouch    => status.Improved() ? ActionId.PreciseTouch.Use() : id.Use(),
+            ActionId.FocusedTouch     => status.Improved() ? ActionId.PreciseTouch.Use() : id.Use(),
+            ActionId.PreparatoryTouch => status.Improved() ? ActionId.PreciseTouch.Use() : id.Use(),
+            _                         => id.Use(),
+        };
     }
 }

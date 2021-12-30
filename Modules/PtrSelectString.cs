@@ -19,16 +19,16 @@ namespace Peon.Modules
             => ptr.Pointer != null;
 
         public bool Select(int idx)
-            => Module.ClickList(&Pointer->PopupMenu.vtbl, Pointer->PopupMenu.List->AtkComponentBase.OwnerNode, idx);
+            => Module.ClickList(&Pointer->PopupMenu.PopupMenu, Pointer->PopupMenu.PopupMenu.List->AtkComponentBase.OwnerNode, idx);
 
         public string Description()
             => Module.TextNodeToString((AtkTextNode*) Pointer->AtkUnitBase.UldManager.NodeList[3]);
 
         public int Count
-            => Pointer->PopupMenu.List->ListLength;
+            => Pointer->PopupMenu.PopupMenu.List->ListLength;
 
         public string ItemText(int idx)
-            => Module.TextNodeToString(Pointer->PopupMenu.List->ItemRendererList[idx]
+            => Module.TextNodeToString(Pointer->PopupMenu.PopupMenu.List->ItemRendererList[idx]
                .AtkComponentListItemRenderer->AtkComponentButton.ButtonTextNode);
 
         public IEnumerable<string> EnumerateTexts()
@@ -38,7 +38,7 @@ namespace Peon.Modules
             => EnumerateTexts().ToArray();
 
         public bool Select(CompareString text)
-            => Module.ClickList(&Pointer->PopupMenu.vtbl, Pointer->PopupMenu.List->AtkComponentBase.OwnerNode,
+            => Module.ClickList(&Pointer->PopupMenu.PopupMenu, Pointer->PopupMenu.PopupMenu.List->AtkComponentBase.OwnerNode,
                 item => text.Matches(Module.TextNodeToString(item->AtkComponentButton.ButtonTextNode)));
     }
 }

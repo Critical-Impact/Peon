@@ -28,8 +28,8 @@ namespace Peon.Utility
 
         public override void PopulateData(RowParser parser, GameData gameData, Language language)
         {
-            RowId      = parser.Row;
-            SubRowId   = parser.SubRow;
+            RowId      = parser.RowId;
+            SubRowId   = parser.SubRowId;
             Identifier = parser.ReadColumn<Lumina.Text.SeString>(0)!;
             String     = parser.ReadColumn<Lumina.Text.SeString>(1)!;
         }
@@ -282,6 +282,10 @@ namespace Peon.Utility
         DelicateSynthesis,
         IntensiveSynthesis,
         TrainedEye,
+        AdvancedTouch,
+        PrudentSynthesis,
+        TrainedFinesse,
+
 
         // Retainer
         SelectCategory,

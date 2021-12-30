@@ -5,10 +5,10 @@
   "Punchline": "Work, Work",
   "Tags": [ "Automation", "Botting", "Quality of Life" ],
   "InternalName": "Peon",
-  "AssemblyVersion": "1.0.1.3",
+  "AssemblyVersion": "1.0.2.0",
   "RepoUrl": "https://github.com/Ottermandias/Peon",
   "ApplicableVersion": "any",
-  "DalamudApiLevel": 4,
+  "DalamudApiLevel": 5,
   "LoadPriority": 69421,
   "IconUrl": "https://i.imgur.com/lkZqgBW.png"
 }

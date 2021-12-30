@@ -17,7 +17,7 @@ namespace Peon.Modules
             => Pointer->AtkUnitBase.IsVisible;
 
         public void Click()
-            => Module.ClickAddon(Pointer, Pointer->AtkStage, EventType.Click, 0);
+            => Module.ClickAddon(Pointer, Pointer->AtkEventListenerUnk.AtkStage, EventType.Click, 0);
 
         public string Speaker()
             => Module.TextNodeToString(Pointer->AtkTextNode220);

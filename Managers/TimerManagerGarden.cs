@@ -318,7 +318,7 @@ namespace Peon.Managers
                 var idx = ((byte*) data)[0x10];
                 if (idx == 1)
                 {
-                    var selectString = (PtrSelectString) (IntPtr) ((AddonSelectString.PopupMenuDerive*) atkUnit)->Owner;
+                    var selectString = (PtrSelectString) (IntPtr) ((AddonSelectString.PopupMenuDerive*) atkUnit)->PopupMenu.Owner;
                     var renderer     = *(AtkComponentListItemRenderer**) data;
                     var text         = renderer->AtkComponentButton.ButtonTextNode->NodeText.ToString();
                     if (text == StringId.TendCrop.Value())
@@ -332,7 +332,7 @@ namespace Peon.Managers
                 }
                 else if (idx == 0)
                 {
-                    var selectString = (PtrSelectString) (IntPtr) ((AddonSelectString.PopupMenuDerive*) atkUnit)->Owner;
+                    var selectString = (PtrSelectString) (IntPtr) ((AddonSelectString.PopupMenuDerive*) atkUnit)->PopupMenu.Owner;
                     var renderer     = *(AtkComponentListItemRenderer**) data;
                     var text         = renderer->AtkComponentButton.ButtonTextNode->NodeText.ToString();
                     if (text == StringId.HarvestCrop.Value())
@@ -350,7 +350,7 @@ namespace Peon.Managers
                 }
                 else if (idx == 2)
                 {
-                    var selectString = (PtrSelectString) (IntPtr) ((AddonSelectString.PopupMenuDerive*) atkUnit)->Owner;
+                    var selectString = (PtrSelectString) (IntPtr) ((AddonSelectString.PopupMenuDerive*) atkUnit)->PopupMenu.Owner;
                     var renderer     = *(AtkComponentListItemRenderer**) data;
                     var text         = renderer->AtkComponentButton.ButtonTextNode->NodeText.ToString();
                     if (text == StringId.RemoveCrop.Value())

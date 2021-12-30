@@ -21,32 +21,13 @@ namespace Peon
         private delegate IntPtr Delegate_Ptr();
         private delegate IntPtr DelegatePtrByte_Ptr(IntPtr a1, byte a2);
         private delegate void   DelegatePtr(IntPtr a1);
+        private delegate void   Delegate2Ptr(IntPtr a1, IntPtr a2);
         private delegate void   DelegatePtrByte(IntPtr a1, byte a2);
         private delegate void   DelegatePtrShort(IntPtr a1, ushort a2);
         private delegate void   Constructor(IntPtr a1);
 
         public static void SetHooks(this HookManager hooks)
         {
-            hooks.Create<Delegate3Ptr_Ptr>("FindResource",   0x1B6880, false, null, null, (Action<IntPtr, IntPtr, IntPtr, IntPtr>)FindResourcePost);
-            hooks.Create<Delegate2Ptr_Ptr>("ResourceUnload", 0x1B2E60, false, (Func<IntPtr, IntPtr, bool>) ResourceUnloadCondition);
-            hooks.Create<Delegate2PtrInt_Ptr>("IncRef", 0x1A2500, false, (Func<IntPtr, IntPtr, uint, bool>) IncRefCondition);
-            hooks.Create<Delegate2PtrInt_Ptr>("DecRef", 0x1A24D0, false, (Func<IntPtr, IntPtr, uint, bool>) IncRefCondition);
-            hooks.Create<OnAddonReceiveEventDelegate>("ReceiveYesNoEvent", 0xCF1220, false, null, ReceiveEventData);
-            hooks.Create<OnAddonReceiveEventDelegate>("ReceiveMainEvent",  0xFFBB20, false, null, ReceiveEventData);
-            hooks.Create<DelegatePtr_Ptr>("MaybeCleanResources", 0x1B4200, false);
-            hooks.Create<OnAddonReceiveEventDelegate>("ReceiveHousingBoardEvent",  0x1058B40, false, null, ReceiveEventData);
-            hooks.Create<OnAddonReceiveEventDelegate>("ReceiveRequestEvent",       0xd0a210,  false, null, ReceiveEventData);
-            hooks.Create<OnAddonReceiveEventDelegate>("ReceiveJournalResultEvent", 0xDF9000,  false, null, ReceiveEventData);
-            hooks.Create<OnAddonReceiveEventDelegate>("ReceiveFocusTargetEvent",   0x101e6b0,  false, (Func<IntPtr, ushort, int, IntPtr, IntPtr, bool>) EventDataCondition, ReceiveEventData);
-            hooks.Create<OnAddonReceiveEventDelegate>("ReceiveSelectStringEvent",   0xCDC310,  false, null, ReceiveEventData);
-            hooks.Create<OnAddonSetupDelegate>("SetupYesNo", 0xCE7800,  false, null);
-            hooks.Create<DelegatePtrByte_Ptr>("Unk", 0x1a5770, false);
-            hooks.Create<DelegatePtr>("Unk2", 0x1a5150, false);
-            hooks.Create<Delegate3PtrInt>("Unk3", 0x1a23a0, false);
-            hooks.Create<DelegatePtrByte>("Airship",        0x2a0b20, false);
-            hooks.Create<DelegatePtrByte>("TerritorySetup", 0xA99C00, false);
-            hooks.Create<Constructor>("AgentFCCandidate", 0x26e510, false);
-            hooks.Create<DelegatePtrInt_Ptr>("Unk4", 0x0AA3F0, false);
         }
 
         private static unsafe bool IncRefCondition(IntPtr a1, IntPtr a2, uint a3)
