@@ -14,9 +14,6 @@ namespace Peon.Modules
         public static implicit operator bool(PtrCharaSelectListMenu ptr)
             => ptr.Pointer != null;
 
-        private int Value
-            => 5;
-
         private AtkComponentNode* ListNode
             => (AtkComponentNode*) Pointer->RootNode->ChildNode->PrevSiblingNode;
 
@@ -45,9 +42,9 @@ namespace Peon.Modules
         }
 
         public bool Select(int idx)
-            => Module.ClickList(Pointer, ListNode, idx, Value, EventType.Click);
+            => Module.ClickList(Pointer, ListNode, idx, 5 + idx, EventType.Click);
 
         public bool Select(CompareString name)
-            => Module.ClickList(Pointer, ListNode, a => name.Matches(Module.TextNodeToString(a->AtkComponentButton.ButtonTextNode)), Value, EventType.Click);
+            => Module.ClickList(Pointer, ListNode, a => name.Matches(Module.TextNodeToString(a->AtkComponentButton.ButtonTextNode)), 5, EventType.Click);
     }
 }

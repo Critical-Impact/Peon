@@ -175,6 +175,10 @@ namespace Peon.Modules
                 var helper = new ClickHelper(addon, node);
                 helper.Data[5] = (byte*) 0x40023;
 
+                // hack for main menu login.
+                if (type == EventType.Click)
+                    value += i;
+
                 ClickAddon(addon, node, type, value, data.Data, helper.Data);
                 return true;
             }

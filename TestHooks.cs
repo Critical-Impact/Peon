@@ -42,7 +42,7 @@ public static unsafe class HookManagerExtension
 
     public static void SetHooks(this HookManager hooks)
     {
-        //hooks.Create<OnAddonReceiveEventDelegate>("Receive", 0xd9fe60, true);
+        //hooks.Create<OnAddonReceiveEventDelegate>("Receive", 0xd9fe60, true, null, ReceiveEventData);
     }
 
 
