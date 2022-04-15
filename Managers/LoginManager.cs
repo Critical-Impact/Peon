@@ -28,7 +28,7 @@ public class LoginManager
         _interfaceManager = interfaceManager;
         _botherHelper     = botherHelper;
         var mainSheet = Dalamud.GameData.GetExcelSheet<MainCommand>(ClientLanguage.English)!;
-        _logOutId = mainSheet.FirstOrDefault(c => c.Name.RawString == "Log Out")?.RowId ?? 0u;
+        _logOutId = mainSheet.FirstOrDefault(c => c.Name?.RawString == "Log Out")?.RowId ?? 0u; // TODO remove ?
         _module   = (UIModule*) Dalamud.GameGui.GetUIModule();
     }
 

@@ -22,7 +22,9 @@ namespace Peon.Modules
             => Module.ClickList(&Pointer->PopupMenu.PopupMenu, Pointer->PopupMenu.PopupMenu.List->AtkComponentBase.OwnerNode, idx);
 
         public string Description()
-            => Module.TextNodeToString((AtkTextNode*) Pointer->AtkUnitBase.UldManager.NodeList[3]);
+            => Pointer->AtkUnitBase.UldManager.NodeListCount > 3 
+                ? Module.TextNodeToString((AtkTextNode*) Pointer->AtkUnitBase.UldManager.NodeList[3]) 
+                : string.Empty;
 
         public int Count
             => Pointer->PopupMenu.PopupMenu.List->ListLength;

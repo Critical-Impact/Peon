@@ -16,6 +16,10 @@ namespace Peon.Managers
         {
             67752,
             67819,
+            69257,
+            69337,
+            69339,
+            69341,
         };
 
         private readonly IsQuestCompleted  _quest;

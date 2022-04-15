@@ -15,7 +15,7 @@ namespace Peon.Modules
             => ptr.Pointer != null;
 
         private int Value
-            => *(int*) ((byte*) Pointer + 0x238);
+            => 5;
 
         private AtkComponentNode* ListNode
             => (AtkComponentNode*) Pointer->RootNode->ChildNode->PrevSiblingNode;
@@ -45,9 +45,9 @@ namespace Peon.Modules
         }
 
         public bool Select(int idx)
-            => Module.ClickList(Pointer, ListNode, idx, Value);
+            => Module.ClickList(Pointer, ListNode, idx, Value, EventType.Click);
 
         public bool Select(CompareString name)
-            => Module.ClickList(Pointer, ListNode, a => name.Matches(Module.TextNodeToString(a->AtkComponentButton.ButtonTextNode)), Value);
+            => Module.ClickList(Pointer, ListNode, a => name.Matches(Module.TextNodeToString(a->AtkComponentButton.ButtonTextNode)), Value, EventType.Click);
     }
 }

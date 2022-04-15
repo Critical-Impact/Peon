@@ -148,7 +148,7 @@ namespace Peon.Modules
             ClickAddon(addon, target, type, which, eventData.Data);
         }
 
-        public static bool ClickList(void* addon, AtkComponentNode* node, int idx, int value = 0)
+        public static bool ClickList(void* addon, AtkComponentNode* node, int idx, int value = 0, EventType type = EventType.ListIndexChange)
         {
             var list = (AtkComponentList*) node->Component;
 
@@ -158,11 +158,11 @@ namespace Peon.Modules
             var data   = new EventData(list->ItemRendererList[idx].AtkComponentListItemRenderer, (ushort) idx);
             var helper = new ClickHelper(addon, node);
             helper.Data[5] = (byte*) 0x40023;
-            ClickAddon(addon, node, EventType.ListIndexChange, value, data.Data, helper.Data);
+            ClickAddon(addon, node, type, value, data.Data, helper.Data);
             return true;
         }
 
-        public static bool ClickList(void* addon, AtkComponentNode* node, ListCallbackDelegate callback, int value = 0)
+        public static bool ClickList(void* addon, AtkComponentNode* node, ListCallbackDelegate callback, int value = 0, EventType type = EventType.ListIndexChange)
         {
             var list = (AtkComponentList*) node->Component;
             for (var i = 0; i < list->ListLength; ++i)
@@ -175,7 +175,7 @@ namespace Peon.Modules
                 var helper = new ClickHelper(addon, node);
                 helper.Data[5] = (byte*) 0x40023;
 
-                ClickAddon(addon, node, EventType.ListIndexChange, value, data.Data, helper.Data);
+                ClickAddon(addon, node, type, value, data.Data, helper.Data);
                 return true;
             }
 

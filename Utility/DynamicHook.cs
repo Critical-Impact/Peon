@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Dalamud.Hooking;
@@ -91,6 +90,15 @@ namespace Peon.Utility
         protected void Detour<T1, T2, T3, T4, T5, T6, T7, T8, T9>(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9)
             => FullDetour(a1, a2, a3, a4, a5, a6, a7, a8, a9);
 
+        protected void Detour<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10)
+            => FullDetour(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
+
+        protected void Detour<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11)
+            => FullDetour(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
+
+        protected void Detour<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12)
+            => FullDetour(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
+
         protected TRet DetourRet<TRet>()
             => FullDetourRet();
 
@@ -120,6 +128,15 @@ namespace Peon.Utility
 
         protected TRet? DetourRet<T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9)
             => FullDetourRet(a1, a2, a3, a4, a5, a6, a7, a8, a9);
+
+        protected TRet? DetourRet<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10)
+            => FullDetourRet(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
+
+        protected TRet? DetourRet<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet>(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11)
+            => FullDetourRet(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
+
+        protected TRet? DetourRet<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet>(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12)
+            => FullDetourRet(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
 
         protected virtual void FullDetour(params dynamic?[] a)
             => throw new NotImplementedException();

@@ -170,6 +170,7 @@ public class Peon : IDalamudPlugin
 
     public void Dispose()
     {
+        Crafter.Dispose();
         ProgramHelper.Dispose();
         TimerManager.Dispose();
         TimerWindow.Dispose();
@@ -475,25 +476,7 @@ public class Peon : IDalamudPlugin
             }
         }
 
-        Task.Run(async () =>
-        {
-            for (var i = 0; i < amount; ++i)
-            {
-                Crafter.RestartCraft();
-                await Crafter.CompleteCraft(macro);
-                if (i != amount - 1)
-                {
-                    var task = InterfaceManager.Add("RecipeNote", true, 5000);
-                    task.Wait();
-                    if (!task.IsCompleted || task.Result == IntPtr.Zero)
-                    {
-                        Dalamud.Chat.PrintError(
-                            $"Terminated after {i}/{amount} crafts, Crafting Log did not reopen.");
-                        break;
-                    }
-                }
-            }
-        });
+        var task = Crafter.CraftAmount(macro, amount);
     }
 
     private unsafe void OnLogin(string command, string arguments)
@@ -579,6 +562,16 @@ public class Peon : IDalamudPlugin
                 else
                     Dalamud.Chat.PrintError("Please enter filename for export.");
                 break;
+            case "random":
+            {
+                if (argumentParts.Length == 1)
+                    return;
+
+                var num = new Random().Next(0, argumentParts.Length - 1);
+                var cmd = $"/{argumentParts[num + 1]}";
+                Commands.Execute(cmd);
+                break;
+            }
         }
     }
 }
