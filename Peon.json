@@ -9,7 +9,6 @@
   "RepoUrl": "https://github.com/Ottermandias/Peon",
   "ApplicableVersion": "any",
   "DalamudApiLevel": 6,
-  "LoadPriority": 69421,
   "IconUrl": "https://i.imgur.com/lkZqgBW.png"
 }
  

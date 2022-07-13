@@ -39,10 +39,10 @@ public static unsafe class HookManagerExtension
     private delegate IntPtr Test(IntPtr a1, IntPtr a2, IntPtr a3, uint a4);
 
     private delegate IntPtr CreateCharacterBase(uint a1, IntPtr a2, IntPtr a3, byte a4);
-
+    private delegate void   PapTest(IntPtr a1, IntPtr a2, IntPtr a3, uint a4, uint a5, IntPtr a6, IntPtr a7);
     public static void SetHooks(this HookManager hooks)
     {
-        //hooks.Create<OnAddonReceiveEventDelegate>("Receive", 0xd9fe60, true, null, ReceiveEventData);
+        //hooks.Create<PapTest>("pap1", 0xd9fe60, true, null, ReceiveEventData);
     }
 
 

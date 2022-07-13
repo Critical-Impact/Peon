@@ -50,8 +50,6 @@ public class Peon : IDalamudPlugin
     public readonly DebuggerCheck   DebuggerCheck;
     public readonly HookManager     Hooks = new();
     public readonly BoardManager    Board;
-    public readonly TimerManager    TimerManager;
-    public readonly TimerWindow     TimerWindow;
 
     public static long BaseAddress;
 
@@ -102,8 +100,6 @@ public class Peon : IDalamudPlugin
         BaseAddress      = Dalamud.SigScanner.Module.BaseAddress.ToInt64();
         LoginBar         = new LoginBar(Login, InterfaceManager);
         Board            = new BoardManager(Targeting, Addons, OhBother, InterfaceManager);
-        TimerManager     = new TimerManager(InterfaceManager, Addons);
-        TimerWindow      = new TimerWindow(TimerManager);
 
         _itemSheet = Dalamud.GameData.GetExcelSheet<Item>()!;
         _items     = new Dictionary<string, (Item, byte)>((int)_itemSheet.RowCount);
@@ -172,8 +168,6 @@ public class Peon : IDalamudPlugin
     {
         Crafter.Dispose();
         ProgramHelper.Dispose();
-        TimerManager.Dispose();
-        TimerWindow.Dispose();
         Hooks.Dispose();
         LoginBar?.Dispose();
         OhBother?.Dispose();

@@ -668,17 +668,6 @@ namespace Peon.Gui
                 Peon.Config.EnableLoginButtons = enableLoginButtons;
                 Save();
             }
-
-            var enableTimers = Peon.Config.EnableTimers;
-            if (ImGui.Checkbox("Enable Timers", ref enableTimers) && enableTimers != Peon.Config.EnableTimers)
-            {
-                Peon.Config.EnableTimers = enableTimers;
-                if (enableTimers)
-                    _peon.TimerManager.SetMessage();
-                else
-                    _peon.TimerManager.RemoveMessage();
-                Save();
-            }
         }
 
 
@@ -721,13 +710,6 @@ namespace Peon.Gui
 
                 if (_peon.OhBother._selectNextString != null)
                     ImGui.Text("Trying to select next string.");
-            }
-
-            if (ImGui.CollapsingHeader("Plant Timers"))
-            {
-                ImGui.Text($"Last Plant: {_peon.TimerManager.LastPlant}");
-                ImGui.Text($"Last Patch: {_peon.TimerManager.LastPatch}");
-                ImGui.Text($"Last Bed: {_peon.TimerManager.LastBed}");
             }
 
             if (ImGui.CollapsingHeader("Strings"))

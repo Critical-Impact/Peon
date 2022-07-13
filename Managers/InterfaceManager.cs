@@ -26,7 +26,7 @@ namespace Peon.Managers
         private readonly bool                       _canGetUiObject;
 
         public static unsafe bool IsReady(AtkUnitBase* ptr)
-            => ptr->UldManager.LoadedState == 3;
+            => ptr->UldManager.LoadedState == AtkLoadState.Loaded;
 
         public InterfaceManager()
         {

@@ -48,7 +48,7 @@ namespace Peon.Utility
 
             try
             {
-                var hook = new Hook<T>(Address, detour);
+                var hook = Hook<T>.FromAddress(Address, detour);
                 hook.Enable();
                 PluginLog.Debug($"[Hooks] Hooked {Name} on 0x{Address:X16} (+0x{offset:X})");
                 return hook;

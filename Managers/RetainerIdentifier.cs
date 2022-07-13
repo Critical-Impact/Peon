@@ -5,52 +5,52 @@ using Dalamud;
 using Dalamud.Logging;
 using Lumina.Excel.GeneratedSheets;
 
-namespace Peon.Managers
+namespace Peon.Managers;
+
+[Flags]
+public enum RetainerJob : byte
 {
-    [Flags]
-    public enum RetainerJob : byte
+    Miner    = 0x01,
+    Botanist = 0x02,
+    Fisher   = 0x04,
+    Hunter   = 0x08,
+}
+
+public class RetainerIdentifier
+{
+    public static readonly RetainerJob[] AllJobs =
     {
-        Miner    = 0x01,
-        Botanist = 0x02,
-        Fisher   = 0x04,
-        Hunter   = 0x08,
-    }
+        RetainerJob.Miner,
+        RetainerJob.Botanist,
+        RetainerJob.Fisher,
+        RetainerJob.Hunter,
+    };
 
-    public class RetainerIdentifier
+    public static readonly RetainerJob[] Gatherers =
     {
-        public static readonly RetainerJob[] AllJobs =
-        {
-            RetainerJob.Miner,
-            RetainerJob.Botanist,
-            RetainerJob.Fisher,
-            RetainerJob.Hunter,
-        };
+        RetainerJob.Miner,
+        RetainerJob.Botanist,
+    };
 
-        public static readonly RetainerJob[] Gatherers =
-        {
-            RetainerJob.Miner,
-            RetainerJob.Botanist,
-        };
+    public static readonly RetainerJob[] Miner =
+    {
+        RetainerJob.Miner,
+    };
 
-        public static readonly RetainerJob[] Miner =
-        {
-            RetainerJob.Miner,
-        };
+    public static readonly RetainerJob[] Botanist =
+    {
+        RetainerJob.Botanist,
+    };
 
-        public static readonly RetainerJob[] Botanist =
-        {
-            RetainerJob.Botanist,
-        };
+    public static readonly RetainerJob[] Fisher =
+    {
+        RetainerJob.Fisher,
+    };
 
-        public static readonly RetainerJob[] Fisher =
-        {
-            RetainerJob.Fisher,
-        };
-
-        public static readonly RetainerJob[] Hunter =
-        {
-            RetainerJob.Hunter,
-        };
+    public static readonly RetainerJob[] Hunter =
+    {
+        RetainerJob.Hunter,
+    };
 
         // @formatter:off
         private static readonly Dictionary<uint, byte> TaskSorting = new()
@@ -252,166 +252,165 @@ namespace Peon.Managers
             [ 929] =  1, [ 928] =  2,                                                                               // 88
             [ 930] =  1, [ 931] =  2,                                                                               // 89
         };
-        // @formatter:on
+    // @formatter:on
 
-        public struct RetainerTaskInfo
+    public struct RetainerTaskInfo
+    {
+        public byte Category;
+        public byte LevelRange;
+        public byte Item;
+    }
+
+    public readonly Dictionary<RetainerJob, Dictionary<string, RetainerTaskInfo>> Tasks = new()
+    {
+        [RetainerJob.Botanist] = new Dictionary<string, RetainerTaskInfo>(),
+        [RetainerJob.Miner]    = new Dictionary<string, RetainerTaskInfo>(),
+        [RetainerJob.Fisher]   = new Dictionary<string, RetainerTaskInfo>(),
+        [RetainerJob.Hunter]   = new Dictionary<string, RetainerTaskInfo>(),
+    };
+
+    private static RetainerJob FromClassJobCategory(byte classJobCategory)
+    {
+        return classJobCategory switch
         {
-            public byte Category;
-            public byte LevelRange;
-            public byte Item;
+            34  => RetainerJob.Hunter,
+            32  => RetainerJob.Botanist | RetainerJob.Miner | RetainerJob.Fisher,
+            18  => RetainerJob.Botanist,
+            17  => RetainerJob.Miner,
+            19  => RetainerJob.Fisher,
+            154 => RetainerJob.Botanist | RetainerJob.Miner,
+            _   => 0,
+        };
+    }
+
+    private static Dictionary<uint, byte> ExplorationsToItem()
+    {
+        var  randomTasks      = Dalamud.GameData.GetExcelSheet<RetainerTaskRandom>(ClientLanguage.English)!;
+        var  ret              = new Dictionary<uint, byte>((int)randomTasks.RowCount);
+        byte watersideCounter = 0;
+        byte woodlandCounter  = 0;
+        byte highlandCounter  = 0;
+        byte fieldCounter     = 0;
+
+        foreach (var task in randomTasks.Reverse())
+        {
+            var name = task.Name.ToString();
+            if (name.StartsWith("Water"))
+                ret.Add(task.RowId, watersideCounter++);
+            else if (name.StartsWith("Wood"))
+                ret.Add(task.RowId, woodlandCounter++);
+            else if (name.StartsWith("High"))
+                ret.Add(task.RowId, highlandCounter++);
+            else if (name.StartsWith("Field"))
+                ret.Add(task.RowId, fieldCounter++);
+            else if (name.StartsWith("Quick"))
+                continue;
+            else
+                PluginLog.Error($"Random exploration {name} could not be corresponded to a job exploration.");
         }
 
-        public readonly Dictionary<RetainerJob, Dictionary<string, RetainerTaskInfo>> Tasks = new()
+        return ret;
+    }
+
+    public bool Identify(string name, RetainerJob job, out RetainerTaskInfo info)
+    {
+        if (!Tasks.TryGetValue(job, out var tasks))
         {
-            [RetainerJob.Botanist] = new Dictionary<string, RetainerTaskInfo>(),
-            [RetainerJob.Miner]    = new Dictionary<string, RetainerTaskInfo>(),
-            [RetainerJob.Fisher]   = new Dictionary<string, RetainerTaskInfo>(),
-            [RetainerJob.Hunter]   = new Dictionary<string, RetainerTaskInfo>(),
+            info = default;
+            PluginLog.Error("Invalid retainer job requested.");
+            return false;
+        }
+
+        name = name.ToLowerInvariant();
+        return tasks.TryGetValue(name, out info);
+    }
+
+    private static List<RetainerTask>[] CreateLists(int count)
+    {
+        var lists = new List<RetainerTask>[count];
+        for (var i = 0; i < count; ++i)
+            lists[i] = new List<RetainerTask>();
+        return lists;
+    }
+
+    private static int Compare(RetainerTask t1, RetainerTask t2)
+    {
+        if (t1.RowId == t2.RowId)
+            return 0;
+        if (t1.RetainerLevel != t2.RetainerLevel)
+            return t1.RetainerLevel.CompareTo(t2.RetainerLevel);
+
+        if (TaskSorting.TryGetValue(t1.RowId, out var v1))
+            if (TaskSorting.TryGetValue(t2.RowId, out var v2))
+                return v1.CompareTo(v2);
+            else
+                return -1;
+        else if (TaskSorting.TryGetValue(t2.RowId, out var _))
+            return 1;
+        else
+            return t1.RowId.CompareTo(t2.RowId);
+    }
+
+    public RetainerIdentifier()
+    {
+        var tasks        = Dalamud.GameData.GetExcelSheet<RetainerTask>()!;
+        var normalTasks  = Dalamud.GameData.GetExcelSheet<RetainerTaskNormal>()!;
+        var randomTasks  = Dalamud.GameData.GetExcelSheet<RetainerTaskRandom>(Dalamud.ClientState.ClientLanguage)!;
+        var items        = Dalamud.GameData.GetExcelSheet<Item>(Dalamud.ClientState.ClientLanguage)!;
+        var levelRanges  = Dalamud.GameData.GetExcelSheet<RetainerTaskLvRange>()!;
+        var explorations = ExplorationsToItem();
+
+        var counters = new Dictionary<RetainerJob, List<RetainerTask>[]>(4)
+        {
+            [RetainerJob.Botanist] = CreateLists((int)levelRanges.RowCount),
+            [RetainerJob.Miner]    = CreateLists((int)levelRanges.RowCount),
+            [RetainerJob.Fisher]   = CreateLists((int)levelRanges.RowCount),
+            [RetainerJob.Hunter]   = CreateLists((int)levelRanges.RowCount),
         };
 
-        private static RetainerJob FromClassJobCategory(byte classJobCategory)
+        foreach (var task in tasks.Where(t => t.Task != 0))
         {
-            return classJobCategory switch
-            {
-                34  => RetainerJob.Hunter,
-                32  => RetainerJob.Botanist | RetainerJob.Miner | RetainerJob.Fisher,
-                18  => RetainerJob.Botanist,
-                17  => RetainerJob.Miner,
-                19  => RetainerJob.Fisher,
-                154 => RetainerJob.Botanist | RetainerJob.Miner,
-                _   => 0,
-            };
-        }
+            var jobs = FromClassJobCategory((byte)task.ClassJobCategory.Row);
+            if (jobs == 0)
+                continue;
 
-        private static Dictionary<uint, byte> ExplorationsToItem()
-        {
-            var  randomTasks      = Dalamud.GameData.GetExcelSheet<RetainerTaskRandom>(ClientLanguage.English)!;
-            var  ret              = new Dictionary<uint, byte>((int) randomTasks.RowCount);
-            byte watersideCounter = 0;
-            byte woodlandCounter  = 0;
-            byte highlandCounter  = 0;
-            byte fieldCounter     = 0;
-
-            foreach (var task in randomTasks.Reverse())
+            if (task.Task < 30000)
             {
-                var name = task.Name.ToString();
-                if (name.StartsWith("Water"))
-                    ret.Add(task.RowId, watersideCounter++);
-                else if (name.StartsWith("Wood"))
-                    ret.Add(task.RowId, woodlandCounter++);
-                else if (name.StartsWith("High"))
-                    ret.Add(task.RowId, highlandCounter++);
-                else if (name.StartsWith("Field"))
-                    ret.Add(task.RowId, fieldCounter++);
-                else if (name.StartsWith("Quick"))
-                    continue;
-                else
-                    PluginLog.Error($"Random exploration {name} could not be corresponded to a job exploration.");
+                foreach (var flag in counters.Where(flag => jobs.HasFlag(flag.Key)))
+                    flag.Value[(byte)((task.RetainerLevel - 1) / 5)].Add(task);
             }
-
-            return ret;
-        }
-
-        public bool Identify(string name, RetainerJob job, out RetainerTaskInfo info)
-        {
-            if (!Tasks.TryGetValue(job, out var tasks))
-            {
-                info = default;
-                PluginLog.Error("Invalid retainer job requested.");
-                return false;
-            }
-
-            name = name.ToLowerInvariant();
-            return tasks.TryGetValue(name, out info);
-        }
-
-        private static List<RetainerTask>[] CreateLists(int count)
-        {
-            var lists = new List<RetainerTask>[count];
-            for (var i = 0; i < count; ++i)
-                lists[i] = new List<RetainerTask>();
-            return lists;
-        }
-
-        private static int Compare(RetainerTask t1, RetainerTask t2)
-        {
-            if (t1.RowId == t2.RowId)
-                return 0;
-            if (t1.RetainerLevel != t2.RetainerLevel)
-                return t1.RetainerLevel.CompareTo(t2.RetainerLevel);
-
-            if (TaskSorting.TryGetValue(t1.RowId, out var v1))
-                if (TaskSorting.TryGetValue(t2.RowId, out var v2))
-                    return v1.CompareTo(v2);
-                else
-                    return -1;
-            else if (TaskSorting.TryGetValue(t2.RowId, out var _))
-                return 1;
             else
-                return t1.RowId.CompareTo(t2.RowId);
+            {
+                var name = randomTasks.GetRow(task.Task)!.Name.ToString().ToLowerInvariant();
+                var taskInfo = new RetainerTaskInfo
+                {
+                    Category   = (byte)(task.Task == 30053 ? 2 : 1),
+                    LevelRange = 0,
+                    Item       = (byte)(task.Task == 30053 ? 0 : explorations[task.Task]),
+                };
+
+                Tasks[jobs].Add(name, taskInfo);
+            }
         }
-
-        public RetainerIdentifier()
-        {
-            var tasks        = Dalamud.GameData.GetExcelSheet<RetainerTask>()!;
-            var normalTasks  = Dalamud.GameData.GetExcelSheet<RetainerTaskNormal>()!;
-            var randomTasks  = Dalamud.GameData.GetExcelSheet<RetainerTaskRandom>(Dalamud.ClientState.ClientLanguage)!;
-            var items        = Dalamud.GameData.GetExcelSheet<Item>(Dalamud.ClientState.ClientLanguage)!;
-            var levelRanges  = Dalamud.GameData.GetExcelSheet<RetainerTaskLvRange>()!;
-            var explorations = ExplorationsToItem();
-
-            var counters = new Dictionary<RetainerJob, List<RetainerTask>[]>(4)
+        
+        foreach (var job in counters)
+            for (var j = 0; j < job.Value.Length; ++j)
             {
-                [RetainerJob.Botanist] = CreateLists((int) levelRanges.RowCount),
-                [RetainerJob.Miner]    = CreateLists((int) levelRanges.RowCount),
-                [RetainerJob.Fisher]   = CreateLists((int) levelRanges.RowCount),
-                [RetainerJob.Hunter]   = CreateLists((int) levelRanges.RowCount),
-            };
-
-            foreach (var task in tasks.Where(t => t.Task != 0))
-            {
-                var jobs = FromClassJobCategory((byte) task.ClassJobCategory.Row);
-                if (jobs == 0)
-                    continue;
-
-                if (task.Task < 30000)
+                var list = job.Value[j];
+                list.Sort(Compare);
+                for (var i = 0; i < list.Count; ++i)
                 {
-                    foreach (var flag in counters.Where(flag => jobs.HasFlag(flag.Key)))
-                        flag.Value[(byte) ((task.RetainerLevel - 1) / 5)].Add(task);
-                }
-                else
-                {
-                    var name = randomTasks.GetRow(task.Task)!.Name.ToString().ToLowerInvariant();
-                    var taskInfo = new RetainerTaskInfo
+                    var task       = list[i];
+                    var normalTask = normalTasks.GetRow(task.Task);
+                    var name       = items.GetRow(normalTask!.Item.Row)!.Name.ToString().ToLowerInvariant();
+                    var taskInfo = new RetainerTaskInfo()
                     {
-                        Category   = (byte) (task.Task == 30053 ? 2 : 1),
-                        LevelRange = 0,
-                        Item       = (byte) (task.Task == 30053 ? 0 : explorations[task.Task]),
+                        Category   = 0,
+                        Item       = (byte)i,
+                        LevelRange = (byte)(job.Value.Length - 2 - j), // got inverted, level range 0 is not valid so one fewer.
                     };
-
-                    Tasks[jobs].Add(name, taskInfo);
+                    Tasks[job.Key].Add(name, taskInfo);
                 }
             }
-
-            foreach (var job in counters)
-                for (var j = 0; j < job.Value.Length; ++j)
-                {
-                    var list = job.Value[j];
-                    list.Sort(Compare);
-                    for (var i = 0; i < list.Count; ++i)
-                    {
-                        var task       = list[i];
-                        var normalTask = normalTasks.GetRow(task.Task);
-                        var name       = items.GetRow(normalTask!.Item.Row)!.Name.ToString().ToLowerInvariant();
-                        var taskInfo = new RetainerTaskInfo()
-                        {
-                            Category   = 0,
-                            Item       = (byte) i,
-                            LevelRange = (byte) j,
-                        };
-                        Tasks[job.Key].Add(name, taskInfo);
-                    }
-                }
-        }
     }
 }

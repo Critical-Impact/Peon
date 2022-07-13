@@ -154,17 +154,17 @@ namespace Peon.Managers
                 return true;
             }
 
-            var task = Interface.Add("InventoryGrid0E", true, DefaultTimeOut);
+            var task = Interface.Add("InventoryGrid3E", true, DefaultTimeOut);
             Wait(task);
             Addons.OnTextErrorChange -= RestingBug;
             if (!task.IsCompleted || task.Result == IntPtr.Zero)
                 return Failure("Could not train chocobo.");
 
             _stable       = IntPtr.Zero;
-            _inventory[0] = task.Result;
+            _inventory[0] = Interface.InventoryGrid(0);
             _inventory[1] = Interface.InventoryGrid(1);
             _inventory[2] = Interface.InventoryGrid(2);
-            _inventory[3] = Interface.InventoryGrid(3);
+            _inventory[3] = task.Result;
             State         = WorkState.InventoryOpen;
             return true;
         }
