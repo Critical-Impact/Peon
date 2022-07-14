@@ -529,7 +529,8 @@ namespace Peon.Managers
 
         private bool SelectLevelRange()
         {
-            if (!_retainerMenu.Select(_retainerInfo.LevelRange))
+            var selectTotal = _retainerMenu.Count - _retainerInfo.LevelRange - 2;
+            if (!_retainerMenu.Select(selectTotal))
                 return Failure("Level Range index not available.");
 
             var task = Interface.Add("RetainerTaskList", true, DefaultTimeOut, ptr => ((PtrRetainerTaskList) ptr).Count > 0);

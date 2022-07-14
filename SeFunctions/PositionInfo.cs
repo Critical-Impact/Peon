@@ -12,7 +12,7 @@ namespace Peon.SeFunctions
         Goblet       = 85,
         LavenderBeds = 84,
         Shirogane    = 129,
-        Firmament    = 254,
+        Firmament    = 211,
     }
 
     public static class HousingZoneExtensions

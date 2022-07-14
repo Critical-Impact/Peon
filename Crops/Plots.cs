@@ -149,7 +149,38 @@ namespace Peon.Crops
         };
 
         private static readonly PlotSize[] FirmamentData =
-            { };
+        {
+            PlotSize.Cottage,
+            PlotSize.House,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.House,
+            PlotSize.House,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.Mansion,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.House,
+            PlotSize.House,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.House,
+            PlotSize.Mansion,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.House,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.Cottage,
+            PlotSize.Mansion
+        };
 
         public static PlotSize GetSize(HousingZone zone, ushort plot)
         {
